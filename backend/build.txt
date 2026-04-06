@@ -1,0 +1,57 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------------< com.autoquizgen:backend >-----------------------
+[INFO] Building backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 10 source files with javac [debug parameters release 21] to target\classes
+[INFO] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/LlamaService.java: E:\Project\AutoQuizGen\AutoQuize\backend\src\main\java\com\autoquizgen\backend\services\LlamaService.java uses unchecked or unsafe operations.
+[INFO] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/LlamaService.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[4,39] package com.fasterxml.jackson.core.type does not exist
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[5,38] package com.fasterxml.jackson.databind does not exist
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[14,19] cannot find symbol
+  symbol:   class ObjectMapper
+  location: class com.autoquizgen.backend.services.ResponseParserService
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[14,51] cannot find symbol
+  symbol:   class ObjectMapper
+  location: class com.autoquizgen.backend.services.ResponseParserService
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[34,60] cannot find symbol
+  symbol:   class TypeReference
+  location: class com.autoquizgen.backend.services.ResponseParserService
+[INFO] 5 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.295 s
+[INFO] Finished at: 2026-04-06T21:42:20+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project backend: Compilation failure: Compilation failure: 
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[4,39] package com.fasterxml.jackson.core.type does not exist
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[5,38] package com.fasterxml.jackson.databind does not exist
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[14,19] cannot find symbol
+[ERROR]   symbol:   class ObjectMapper
+[ERROR]   location: class com.autoquizgen.backend.services.ResponseParserService
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[14,51] cannot find symbol
+[ERROR]   symbol:   class ObjectMapper
+[ERROR]   location: class com.autoquizgen.backend.services.ResponseParserService
+[ERROR] /E:/Project/AutoQuizGen/AutoQuize/backend/src/main/java/com/autoquizgen/backend/services/ResponseParserService.java:[34,60] cannot find symbol
+[ERROR]   symbol:   class TypeReference
+[ERROR]   location: class com.autoquizgen.backend.services.ResponseParserService
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
