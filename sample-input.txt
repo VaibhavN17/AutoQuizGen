@@ -1,0 +1,1 @@
+Java is an object-oriented programming language. Encapsulation, inheritance, polymorphism, and abstraction are core OOP principles. Spring Boot simplifies Java backend development.

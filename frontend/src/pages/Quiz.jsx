@@ -1,5 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { buildApiUrl } from '../lib/api';
+
+const PROGRESS_STORAGE_KEY = 'autoquiz.progress';
+
+const shuffleArray = (items) => {
+  const clone = [...items];
+  for (let i = clone.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [clone[i], clone[j]] = [clone[j], clone[i]];
+  }
+  return clone;
+};
 
 export default function Quiz({ onTimerUpdate }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -10,13 +22,20 @@ export default function Quiz({ onTimerUpdate }) {
   const location = useLocation();
 
   const quizData = location.state?.quiz;
-  const questions = quizData ? quizData.questions.map((q, idx) => ({
-    id: q.id || idx,
-    question: q.questionText,
-    options: q.options,
-    correctAnswer: q.correctAnswerIndex,
-    category: q.category || 'Generated'
-  })) : [];
+  const questions = useMemo(() => {
+    if (!quizData || !Array.isArray(quizData.questions)) return [];
+
+    const mappedQuestions = quizData.questions.map((q, idx) => ({
+      id: q.id || idx,
+      question: q.questionText,
+      options: q.options,
+      correctAnswer: q.correctAnswerIndex,
+      category: q.category || 'Generated'
+    }));
+
+    // Randomize question order each attempt so quiz sessions stay fresh.
+    return shuffleArray(mappedQuestions);
+  }, [quizData]);
 
   useEffect(() => {
     if (!quizData || questions.length === 0) {
@@ -86,8 +105,57 @@ export default function Quiz({ onTimerUpdate }) {
       }
     });
     const score = Math.round((correct / questions.length) * 100);
+
+    const progressEntry = {
+      quizId: quizData?.id,
+      title: quizData?.title || 'Generated Quiz',
+      difficulty: quizData?.difficulty || 'medium',
+      total: questions.length,
+      correct,
+      score,
+      completedAt: new Date().toISOString(),
+      timeElapsed: formatTime(timeElapsed),
+    };
+
+    // Save to localStorage
+    try {
+      const existing = JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '[]');
+      const next = Array.isArray(existing) ? [...existing, progressEntry] : [progressEntry];
+      localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(next.slice(-100)));
+    } catch (error) {
+      console.error('Unable to save progress to localStorage:', error);
+    }
+
+    // Save attempt to backend database
+    const saveAttemptToDb = async () => {
+      try {
+        const attemptPayload = {
+          score,
+          totalQuestions: questions.length,
+          correctAnswers: correct,
+          timeElapsedSeconds: timeElapsed,
+          difficultyLevel: quizData?.difficulty || 'medium'
+        };
+
+        const response = await fetch(buildApiUrl(`/quizzes/${quizData?.id}/attempts`), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(attemptPayload)
+        });
+
+        if (!response.ok) {
+          console.error('Failed to save attempt to database:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error saving attempt to database:', error);
+      }
+    };
+
+    saveAttemptToDb();
+
     navigate('/results', {
       state: {
+        quizId: quizData?.id,
         score,
         correct,
         total: questions.length,

@@ -1,9 +1,13 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../lib/api';
+
+const PROGRESS_STORAGE_KEY = 'autoquiz.progress';
 
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
   const { 
+    quizId = null,
     score = 0, 
     correct = 0, 
     total = 0, 
@@ -36,6 +40,45 @@ export default function Results() {
   const strongAreas = categoryPerformance.filter((c) => c.score >= 80);
   const wrong = total - correct;
 
+  const progressCount = (() => {
+    try {
+      const progress = JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '[]');
+      return Array.isArray(progress) ? progress.length : 0;
+    } catch {
+      return 0;
+    }
+  })();
+
+  const handleExport = async (type) => {
+    if (!quizId) {
+      alert('Export is available only for saved quizzes.');
+      return;
+    }
+
+    try {
+      const response = await fetch(buildApiUrl(`/quizzes/${quizId}/export/${type}`));
+      if (!response.ok) {
+        throw new Error(`Export failed (${response.status})`);
+      }
+
+      const blob = await response.blob();
+      const extension = type === 'pdf' ? 'pdf' : 'csv';
+      const downloadName = `${(title || 'quiz').replace(/[^a-zA-Z0-9-_]+/g, '_')}-${quizId}.${extension}`;
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = downloadName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert('Unable to export file right now.');
+    }
+  };
+
   // SVG circle calculations
   const radius = 88;
   const circumference = 2 * Math.PI * radius;
@@ -55,6 +98,20 @@ export default function Results() {
           <button className="px-6 py-2.5 bg-surface-container-low text-on-surface-variant font-semibold rounded-lg flex items-center gap-2 hover:bg-surface-container-high transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-lg">share</span>
             Share Results
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            className="px-6 py-2.5 bg-surface-container-low text-on-surface-variant font-semibold rounded-lg flex items-center gap-2 hover:bg-surface-container-high transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+            Export PDF
+          </button>
+          <button
+            onClick={() => handleExport('csv')}
+            className="px-6 py-2.5 bg-surface-container-low text-on-surface-variant font-semibold rounded-lg flex items-center gap-2 hover:bg-surface-container-high transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-lg">table_view</span>
+            Export CSV
           </button>
           <button
             onClick={() => navigate('/quiz')}
@@ -104,7 +161,7 @@ export default function Results() {
               <div>
                 <h3 className="text-lg font-bold text-on-surface">Performance Breakdown</h3>
                 <p className="text-sm text-on-surface-variant">
-                  {total} Questions total • {timeElapsed} Completion time
+                    {total} Questions total • {timeElapsed} Completion time • {progressCount} attempts tracked
                 </p>
               </div>
               <div className="flex gap-4">
